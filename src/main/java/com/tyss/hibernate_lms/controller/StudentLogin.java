@@ -52,10 +52,40 @@ public class StudentLogin {
 								case 1:
 									BookBean bookBean1 = new BookBean();
 									System.out.println("Enter your choice");
-									System.out.println("1:Search Book By Title \t 2:Search book By Author");
+									System.out.println("1:Search Book By Id 2:Search Book By Title \t 3:Search book By Author");
 									int ch1 = scanner.nextInt();
 									switch(ch1) {
 									case 1:
+										System.out.println("Enter the book Id");
+										int bookId = scanner.nextInt();
+										do {
+											try {
+												if(validation.validateBookId(bookId)) {
+													flag = true;
+												} else {
+													System.out.println("Invalid Id");
+												}
+											} catch (InputMismatchException e) {
+												flag = false;
+												System.err.println("Enter the book Id");
+											} catch (ValidationException e) {
+												flag = false;
+												System.err.println(e.getMessage());
+											}
+										}while(!flag);
+
+										System.out.println("----------------------------------------------------------------------------------------"
+												+ "---------------------------------------------------------------------------------------------");
+										bookBean1 = studentService.searchBookById(bookId);
+										if(bookBean1 != null) {
+											System.out.println("Book is available");
+										} else {
+											System.out.println("Book doesn't exist");
+										}
+										System.out.println("----------------------------------------------------------------------------------------"
+												+ "---------------------------------------------------------------------------------------------");
+										break;
+									case 2:
 										System.out.println("Enter the book title");
 										String bookTitle = bufferedReader.readLine();
 										do {
@@ -83,7 +113,7 @@ public class StudentLogin {
 										System.out.println("----------------------------------------------------------------------------------------"
 												+ "---------------------------------------------------------------------------------------------");
 										break;
-									case 2:
+									case 3:
 										System.out.println("Enter the book author");
 										String author = bufferedReader.readLine();
 										do {
@@ -186,23 +216,25 @@ public class StudentLogin {
 									break;
 								case 4:
 									System.out.println("Enter User Id"); 
-									int userId = scanner.nextInt();
+									int user_Id1 = scanner.nextInt();
 
 									do { 
 										try { 
-											if(validation.validateId(userId)) { 
+											if(validation.validateId(user_Id1)) { 
+												
 												flag = true; 
 											} 
 										} catch	(InputMismatchException e) { 
 											flag = false;
 											System.err.println("Invalid User Id"); 
 										} catch (ValidationException e) { 
+											e.printStackTrace();
 											flag = false; 
 											System.err.println(e.getMessage()); 
 										} 
 									}while(!flag);
 									
-									List<BorrowBook> borrowedBooks = studentService.borrowedBook(userId);
+									List<BorrowBook> borrowedBooks = studentService.borrowedBook(user_Id1);
 
 									System.out.println("----------------------------------------------------------------------------------------"
 											+ "---------------------------------------------------------------------------------------------");
@@ -241,6 +273,7 @@ public class StudentLogin {
 					}
 				}
 				catch(Exception e) {
+					e.printStackTrace();
 					flag = false;
 					System.out.println("Invalid Email/Password");
 				}

@@ -1,6 +1,5 @@
 package com.tyss.hibernate_lms.dao_test;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
@@ -49,12 +48,9 @@ public class AdminDAOTest {
 
 	@Test 
 	public void testIssueBook() { 
-		IssueBook issueBook = new IssueBook();
-		issueBook.setBookId(3002); 
-		issueBook.setIssueDate(LocalDate.now());
-		issueBook.setReturnDate(LocalDate.now().plusDays(10));
-		issueBook.setUserId(14003); 
-		boolean status = dao.issueBook(issueBook);
+		int userId = 10001;
+		int bookId = 2001; 
+		boolean status = dao.issueBook(userId, bookId);
 		Assertions.assertTrue(status); 
 	}
 
@@ -73,9 +69,15 @@ public class AdminDAOTest {
 	}
 
 	@Test
-	public void testShowUsers() {
-		List<UserBean> requestBooks = dao.showUsers();
+	public void testShowStudentUsers() {
+		List<UserBean> requestBooks = dao.showStudentUsers();
 		Assertions.assertNotNull(requestBooks);
+	}
+	
+	@Test
+	public void testIssuedBooks() {
+		List<IssueBook> issueBook = dao.issuedBooks();
+		Assertions.assertNotNull(issueBook);
 	}
 
 	@Test

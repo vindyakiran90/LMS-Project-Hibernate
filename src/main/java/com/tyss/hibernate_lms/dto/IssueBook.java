@@ -39,6 +39,6 @@ public class IssueBook implements Serializable {
 	
 	@Override
 	public String toString() {
-		return String.format("%-6s %-5s %-10s %-15s", userId, bookId, issueDate, returnDate);
+		return String.format("%-10s %-10s %-10s %-10s %-10s", issueId, bookId, issueDate, returnDate, userId);
 	}
 }

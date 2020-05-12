@@ -3,7 +3,6 @@ package com.tyss.hibernate_lms.controller;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.time.LocalDate;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
@@ -56,7 +55,8 @@ public class AdminLogin {
 										+ "7:Student List \n"
 										+ "8:Show Requests \n"
 										+ "9:Book Return \n"
-										+ "10:Go back to the Main");
+										+ "10:Issued Books List \n"
+										+ "11:Go back to the Main");
 								int choice1 = scanner.nextInt();
 
 								switch(choice1) {
@@ -305,13 +305,12 @@ public class AdminLogin {
 											+ "---------------------------------------------------------------------------------------------");
 									break;
 								case 5:
-									IssueBook issueBook = new IssueBook();
+									System.out.println("Enter the Student User Id");
+									int user_Id2 = scanner.nextInt();
+
 									do {
 										try {
-											System.out.println("Enter the Student User Id");
-											int userId = scanner.nextInt();
-											if(validation.validateId(userId)) {
-												issueBook.setUserId(userId);
+											if(validation.validateId(user_Id2)) {
 												flag = true;
 											}
 										} catch (InputMismatchException e) {
@@ -323,12 +322,12 @@ public class AdminLogin {
 										}
 									}while(!flag);
 
+									
+									System.out.println("Enter the Book Id");
+									int book_Id2 = scanner.nextInt();
 									do {
 										try {
-											System.out.println("Enter the book id");
-											int bookId2 = scanner.nextInt();
-											if(validation.validateBookId(bookId2)) {
-												issueBook.setBookId(bookId2);
+											if(validation.validateBookId(book_Id2)) {
 												flag = true;
 											}
 										} catch (InputMismatchException e) {
@@ -340,13 +339,7 @@ public class AdminLogin {
 										}
 									}while(!flag);
 
-									LocalDate currentDate = LocalDate.now();
-									issueBook.setIssueDate(currentDate);
-
-									LocalDate returnDate = LocalDate.now().plusDays(10);
-									issueBook.setReturnDate(returnDate);
-
-									boolean check = adminService.issueBook(issueBook);
+									boolean check = adminService.issueBook(user_Id2, book_Id2);
 
 									System.out.println("----------------------------------------------------------------------------------------"
 											+ "---------------------------------------------------------------------------------------------");
@@ -379,7 +372,7 @@ public class AdminLogin {
 											+ "---------------------------------------------------------------------------------------------");
 									break;
 								case 7:
-									List<UserBean> studentInfo = adminService.showUsers();
+									List<UserBean> studentInfo = adminService.showStudentUsers();
 									System.out.println("----------------------------------------------------------------------------------------"
 											+ "---------------------------------------------------------------------------------------------");
 									if(!studentInfo.isEmpty() ) {
@@ -464,6 +457,24 @@ public class AdminLogin {
 									break;
 
 								case 10:
+									List<IssueBook> issueBook = adminService.issuedBooks();
+									System.out.println("----------------------------------------------------------------------------------------"
+											+ "---------------------------------------------------------------------------------------------");
+									if(!issueBook.isEmpty() ) {
+										System.out.println(String.format("%-10s %-10s %-10s %-10s %-10s", "ISSUE ID", "BOOK ID", "ISSUE DATE", "RETURN DATE", "USER ID"));
+										System.out.println("----------------------------------------------------------------------------------------"
+												+ "---------------------------------------------------------------------------------------------");
+										System.out.println();
+										for(IssueBook issueBook1 : issueBook) {
+											System.out.println(issueBook1.toString());
+										}
+									} else {
+										System.out.println("No books are issued");
+									}
+									System.out.println("----------------------------------------------------------------------------------------"
+											+ "---------------------------------------------------------------------------------------------");
+									break;
+								case 11:
 									System.out.println("----------------------------------------------------------------------------------------"
 											+ "---------------------------------------------------------------------------------------------");
 									String args[] = {"Welcome to Main Controller"}; 

@@ -37,25 +37,6 @@ public class StudentDAOImplementation implements StudentDAO {
 	}
 
 	@Override
-	public BorrowBook bookBorrow(BorrowBook borrow) {
-		EntityManager manager = null;
-		EntityTransaction transaction = null;
-		try {
-			manager = factory.createEntityManager();
-			transaction = manager.getTransaction();
-			transaction.begin();
-			manager.persist(borrow);
-			transaction.commit();
-			return borrow;
-		} catch (Exception e) {
-			transaction.rollback();
-			return null;
-		} finally {
-			manager.close();
-		}
-	}
-
-	@Override
 	public BookBean searchBookById(int bookId) {
 		EntityManager manager = null;
 		try {

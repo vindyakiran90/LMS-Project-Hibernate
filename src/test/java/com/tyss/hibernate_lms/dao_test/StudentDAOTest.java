@@ -1,6 +1,5 @@
 package com.tyss.hibernate_lms.dao_test;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
@@ -29,20 +28,7 @@ public class StudentDAOTest {
 		List<BorrowBook> borrowBook = dao.borrowedBook(userId);
 		Assertions.assertNotNull(borrowBook);
 	}
-	
-	@Test
-	public void testBookBorrow() {
-		BorrowBook borrowBook = new BorrowBook();
-		borrowBook.setBookId(2001);
-		borrowBook.setUserId(10002);
-		borrowBook.setNoOfBooksBorrowed(1);
-		borrowBook.setDateOfBorrowed(LocalDate.now());
-		borrowBook.setDateOfReturn(LocalDate.now().plusDays(10));
-		borrowBook.setFees(0.0);
-		BorrowBook borrowBook1 = dao.bookBorrow(borrowBook);
-		Assertions.assertNotNull(borrowBook1);
-	}
-	
+		
 	@Test
 	public void testSearchBookById() {
 		int id = 2001;

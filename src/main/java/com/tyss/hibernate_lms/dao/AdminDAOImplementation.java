@@ -49,7 +49,7 @@ public class AdminDAOImplementation implements AdminDAO {
 	}
 
 	@Override
-	public boolean issueBook(IssueBook issueBook) {
+	public boolean issueBook(int userId, int bookId) {
 		EntityManager manager = null;
 		EntityTransaction transaction = null;
 		BorrowBook borrowBook = new BorrowBook();
@@ -62,31 +62,28 @@ public class AdminDAOImplementation implements AdminDAO {
 			//Get the number of books borrowed
 			String jpql = "select count(b.noOfBooksBorrowed) from BorrowBook b where b.userId = :userId";
 			Query query = manager.createQuery(jpql); 
-			query.setParameter("userId", issueBook.getUserId());
+			query.setParameter("userId", userId);
 			Long countOfnoOfBooksBorrowed = (Long) query.getSingleResult();
 			System.out.println("CountOfnoOfBooksBorrowed = "+countOfnoOfBooksBorrowed);
 
-			UserBean userBean = manager.find(UserBean.class, issueBook.getUserId());
-			BookBean bookBean = manager.find(BookBean.class, issueBook.getBookId());
+			UserBean userBean = manager.find(UserBean.class, userId);
+			BookBean bookBean = manager.find(BookBean.class, bookId);
 
 			//To check whether borrowbook table is empty or not
 			try {
 				String jpql1 = "select b from BorrowBook b where b.userId = :userId";
 				Query query1 = manager.createQuery(jpql1); 
-				query1.setParameter("userId", issueBook.getUserId());
+				query1.setParameter("userId", userId);
 				borrowBook = (BorrowBook) query1.getSingleResult();
 
 				//To check whether user is requested book or not
 				String jpql2 = "select b from RequestBook b where b.userId = :userId and b.bookId = :bookId";
 				Query query2 = manager.createQuery(jpql2); 
-				query2.setParameter("userId", issueBook.getUserId());
-				query2.setParameter("bookId", issueBook.getBookId());
+				query2.setParameter("userId",userId);
+				query2.setParameter("bookId", bookId);
 				requestBook = (RequestBook) query2.getSingleResult();
 
 			} catch (Exception e) {}
-
-
-
 
 			if(requestBook != null) {
 				if(userBean != null) {
@@ -96,20 +93,28 @@ public class AdminDAOImplementation implements AdminDAO {
 
 								bookBean.setNumberOfAvailableBooks(bookBean.getNumberOfAvailableBooks() - 1);
 								bookBean.setNumberOfIssuedBooks(bookBean.getNumberOfIssuedBooks() + 1);
+								
+								LocalDate issueDate = LocalDate.now();
+								LocalDate returnDate = LocalDate.now().plusDays(10);
+								
+								IssueBook issueBook = new IssueBook();
+								issueBook.setBookId(bookId);
+								issueBook.setUserId(userId);
+								issueBook.setIssueDate(issueDate);
+								issueBook.setReturnDate(returnDate);
 								manager.persist(issueBook);
+								
 								manager.persist(bookBean);
 								BorrowBook borrowBook1 = new BorrowBook();
-								borrowBook1.setBookId(issueBook.getBookId());
-								borrowBook1.setDateOfBorrowed(issueBook.getIssueDate());
-								borrowBook1.setDateOfReturn(issueBook.getReturnDate());
-								borrowBook1.setUserId(issueBook.getUserId());
+								borrowBook1.setBookId(bookId);
+								borrowBook1.setDateOfBorrowed(issueDate);
+								borrowBook1.setDateOfReturn(returnDate);
+								borrowBook1.setUserId(userId);
 								borrowBook1.setFees(borrowBook1.getFees() + 0.00);
 								borrowBook1.setNoOfBooksBorrowed(borrowBook1.getNoOfBooksBorrowed() + 1);
-								StudentDAO studentDAO = new StudentDAOImplementation();
-								studentDAO.bookBorrow(borrowBook1);
-
-								if(issueBook != null) {
-
+								manager.persist(borrowBook1);
+								
+								if(requestBook != null) {
 									String jpql3 = "select r from RequestBook r where r.userId = :userId and r.bookId = :bookId";
 									Query query3 = manager.createQuery(jpql3); 
 									query3.setParameter("userId", issueBook.getUserId());
@@ -120,7 +125,7 @@ public class AdminDAOImplementation implements AdminDAO {
 								transaction.commit();
 
 							} else {
-								throw new CustomException("Fees is unclear");
+								throw new CustomException("Fees is due");
 							}
 						} else {
 							throw new CustomException("Number of books borrowed limit exceeded");
@@ -160,8 +165,9 @@ public class AdminDAOImplementation implements AdminDAO {
 		}
 	}
 
+	
 	@Override
-	public List<UserBean> showUsers() {
+	public List<UserBean> showStudentUsers() {
 		EntityManager manager = null;
 		try {
 			manager = factory.createEntityManager();
@@ -271,6 +277,22 @@ public class AdminDAOImplementation implements AdminDAO {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
+		} finally {
+			manager.close();
+		}
+	}
+
+	@Override
+	public List<IssueBook> issuedBooks() {
+		EntityManager manager = null;
+		try {
+			manager = factory.createEntityManager();
+			String jpql = "select b from IssueBook b";
+			TypedQuery<IssueBook> query = manager.createQuery(jpql, IssueBook.class);
+			List<IssueBook> beans = query.getResultList();
+			return beans;
+		} catch (Exception e) {
+			return null;
 		} finally {
 			manager.close();
 		}

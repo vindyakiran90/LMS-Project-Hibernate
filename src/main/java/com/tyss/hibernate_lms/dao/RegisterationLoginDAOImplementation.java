@@ -17,7 +17,7 @@ public class RegisterationLoginDAOImplementation implements RegisterationLoginDA
 		EntityManager manager = null;
 		try {
 			manager = factory.createEntityManager();
-			String jpql = "select e from UserBean e where email=:email and password=:password";
+			String jpql = "select e from UserBean e where e.email=:email and e.password=:password";
 			TypedQuery<UserBean> query = manager.createQuery(jpql, UserBean.class);
 			query.setParameter("email", email);
 			query.setParameter("password", password);

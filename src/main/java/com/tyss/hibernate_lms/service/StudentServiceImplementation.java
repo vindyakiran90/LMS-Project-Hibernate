@@ -22,11 +22,6 @@ public class StudentServiceImplementation implements StudentService {
 	}
 
 	@Override
-	public BorrowBook bookBorrow(BorrowBook books) {
-		return dao.bookBorrow(books);
-	}
-
-	@Override
 	public BookBean searchBookById(int bookId) {
 		return dao.searchBookById(bookId);
 	}
