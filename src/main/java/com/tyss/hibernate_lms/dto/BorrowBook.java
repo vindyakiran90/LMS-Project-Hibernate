@@ -43,7 +43,7 @@ public class BorrowBook implements Serializable{
 	
 	@Override
 	public String toString() {
-		return String.format("%-10s %-10s %-10s %-20s %-15s %-15s %-5s", userId, bookId, noOfBooksBorrowed, 
+		return String.format("%-10s %-10s %-10s %-20s %-20s %-20s %-10s", borrowId, userId, bookId, noOfBooksBorrowed, 
 				dateOfBorrowed, dateOfReturn, fees);
 	}
 }

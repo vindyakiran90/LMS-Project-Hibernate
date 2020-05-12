@@ -240,7 +240,7 @@ public class StudentLogin {
 											+ "---------------------------------------------------------------------------------------------");
 
 									if(!borrowedBooks.isEmpty()) {
-										System.out.println(String.format("%-10s %-10s %-10s %-20s %-15s %-15s %-5s", "USER ID", 
+										System.out.println(String.format("%-10s %-10s %-10s %-20s %-20s %-20s %-10s", "BORROW ID", "USER ID", 
 												"BOOK ID", "NO OF BOOKS BORROWED", "DATE OF BORROWED", "DATE OF RETURN", "FEES"));
 										System.out.println("----------------------------------------------------------------------------------------"
 												+ "---------------------------------------------------------------------------------------------");
