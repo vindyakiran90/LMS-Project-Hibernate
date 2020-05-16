@@ -13,7 +13,7 @@ import com.tyss.hibernate_lms.dto.BookBean;
 import com.tyss.hibernate_lms.dto.BorrowBook;
 import com.tyss.hibernate_lms.dto.RequestBook;
 import com.tyss.hibernate_lms.dto.UserBean;
-import com.tyss.hibernate_lms.exception.CustomException;
+import com.tyss.hibernate_lms.exception.LMSException;
 
 public class StudentDAOImplementation implements StudentDAO {
 
@@ -162,25 +162,25 @@ public class StudentDAOImplementation implements StudentDAO {
 										transaction.commit();
 										return true;
 									} else {
-										throw new CustomException("Book is not in stock");
+										throw new LMSException("Book is not in stock");
 									}
 								} else {
-									throw new CustomException("Exceeded limit to borrow the book");
+									throw new LMSException("Exceeded limit to borrow the book");
 								}
 							}else {
-								throw new CustomException("Exceeded limit to request the book");
+								throw new LMSException("Exceeded limit to request the book");
 							}
 						} else {
-							throw new CustomException("Book is already borrowed, cannot be issued again");
+							throw new LMSException("Book is already borrowed, cannot be issued again");
 						}
 					} else {
-						throw new CustomException("Book is already requested, cannot request again");
+						throw new LMSException("Book is already requested, cannot request again");
 					} 
 				} else {
-					throw new CustomException("User does not exist");
+					throw new LMSException("User does not exist");
 				}
 			} else {
-				throw new CustomException("Book does not exist");
+				throw new LMSException("Book does not exist");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

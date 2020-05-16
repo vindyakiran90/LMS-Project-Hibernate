@@ -12,6 +12,7 @@ import javax.xml.bind.ValidationException;
 import com.tyss.hibernate_lms.dto.BookBean;
 import com.tyss.hibernate_lms.dto.BorrowBook;
 import com.tyss.hibernate_lms.dto.UserBean;
+import com.tyss.hibernate_lms.exception.LMSException;
 import com.tyss.hibernate_lms.factory.RegisterationLoginFactory;
 import com.tyss.hibernate_lms.factory.StudentFactory;
 import com.tyss.hibernate_lms.service.RegisterationLoginService;
@@ -26,7 +27,6 @@ public class StudentLogin {
 	StudentService studentService = StudentFactory.getStudentService();
 
 	public void login() {
-
 		try(Scanner scanner = new Scanner(System.in);
 				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in))){
 			do {
@@ -37,7 +37,7 @@ public class StudentLogin {
 					String password = scanner.next();
 					if(validation.validateEmail(email) && validation.validatePassword(password)) {
 						UserBean userBean = registerationLoginService.login(email, password);
-						if(userBean.getRole().equals("Student")) {
+						if(userBean.getRole().equalsIgnoreCase("Student")) {
 							System.out.println("Logged in");
 							flag = true;
 							while(flag) {
@@ -52,24 +52,25 @@ public class StudentLogin {
 								case 1:
 									BookBean bookBean1 = new BookBean();
 									System.out.println("Enter your choice");
-									System.out.println("1:Search Book By Id 2:Search Book By Title \t 3:Search book By Author");
+									System.out.println("1:Search Book By Id \t 2:Search Book By Title \t 3:Search book By Author");
 									int ch1 = scanner.nextInt();
 									switch(ch1) {
 									case 1:
-										System.out.println("Enter the book Id");
-										int bookId = scanner.nextInt();
+										int bookId = 0;
 										do {
 											try {
+												System.out.println("Enter the book Id");
+												bookId = scanner.nextInt();
 												if(validation.validateBookId(bookId)) {
 													flag = true;
-												} else {
-													System.out.println("Invalid Id");
 												}
 											} catch (InputMismatchException e) {
 												flag = false;
-												System.err.println("Enter the book Id");
+												scanner.nextLine();
+												System.err.println("Invalid Id");
 											} catch (ValidationException e) {
 												flag = false;
+												scanner.nextLine();
 												System.err.println(e.getMessage());
 											}
 										}while(!flag);
@@ -83,21 +84,25 @@ public class StudentLogin {
 											System.out.println("Book doesn't exist");
 										}
 										System.out.println("----------------------------------------------------------------------------------------"
+
 												+ "---------------------------------------------------------------------------------------------");
 										break;
 									case 2:
-										System.out.println("Enter the book title");
-										String bookTitle = bufferedReader.readLine();
+										String bookTitle = null;
 										do {
 											try {
+												System.out.println("Enter the book title");
+												bookTitle = bufferedReader.readLine();
 												if(validation.validateBook(bookTitle)) {
 													flag = true;
 												}
 											} catch (InputMismatchException e) {
 												flag = false;
+												scanner.nextLine();
 												System.err.println("Enter the booktitle");
 											} catch (ValidationException e) {
 												flag = false;
+												scanner.nextLine();
 												System.err.println(e.getMessage());
 											}
 										}while(!flag);
@@ -114,18 +119,21 @@ public class StudentLogin {
 												+ "---------------------------------------------------------------------------------------------");
 										break;
 									case 3:
-										System.out.println("Enter the book author");
-										String author = bufferedReader.readLine();
+										String author = null;
 										do {
 											try {
+												System.out.println("Enter the book author");
+												author = bufferedReader.readLine();
 												if(validation.validateBook(author)) {
 													flag = true;
 												}
 											} catch (InputMismatchException e) {
 												flag = false;
+												scanner.nextLine();
 												System.err.println("Invalid author name");
 											} catch (ValidationException e) {
 												flag = false;
+												scanner.nextLine();
 												System.err.println(e.getMessage());
 											}
 										}while(!flag);
@@ -159,7 +167,6 @@ public class StudentLogin {
 												+ "---------------------------------------------------------------------------------------------");
 										System.out.println();
 										for(BookBean beanInfo : allBookInfo) {
-
 											System.out.println(beanInfo.toString());
 										}
 									} else {
@@ -169,34 +176,36 @@ public class StudentLogin {
 											+ "---------------------------------------------------------------------------------------------");
 									break;
 								case 3:
-
-									System.out.println("Enter User Id"); 
-									int user_Id = scanner.nextInt();
-
-									System.out.println("Enter Book Id");
-									int book_Id = scanner.nextInt();
-
+									int user_Id = 0;
+									int book_Id = 0;
 									do { 
 										try { 
+											System.out.println("Enter User Id"); 
+											user_Id = scanner.nextInt();
 											if(validation.validateId(user_Id)) { 
 												flag = true; 
 											} 
 										} catch	(InputMismatchException e) { 
 											flag = false;
+											scanner.nextLine();
 											System.err.println("Invalid User Id"); 
 										} catch (ValidationException e) { 
 											flag = false; 
+											scanner.nextLine();
 											System.err.println(e.getMessage()); 
 										} 
 									}while(!flag);
 
 									do {
 										try {
+											System.out.println("Enter Book Id");
+											book_Id = scanner.nextInt();
 											if(validation.validateBookId(book_Id)) {
 												flag = true;
 											}
 										} catch (InputMismatchException e) {
 											flag = false;
+											scanner.nextLine();
 											System.err.println("Invalid Book Id");
 										} catch (ValidationException e) {
 											flag = false;
@@ -215,25 +224,26 @@ public class StudentLogin {
 											+ "---------------------------------------------------------------------------------------------");
 									break;
 								case 4:
-									System.out.println("Enter User Id"); 
-									int user_Id1 = scanner.nextInt();
+									int user_Id1 = 0;
 
 									do { 
 										try { 
+											System.out.println("Enter User Id"); 
+											user_Id1 = scanner.nextInt();
 											if(validation.validateId(user_Id1)) { 
-												
 												flag = true; 
 											} 
 										} catch	(InputMismatchException e) { 
 											flag = false;
+											scanner.nextLine();
 											System.err.println("Invalid User Id"); 
 										} catch (ValidationException e) { 
-											e.printStackTrace();
-											flag = false; 
+											flag = false;
+											scanner.nextLine();
 											System.err.println(e.getMessage()); 
 										} 
 									}while(!flag);
-									
+
 									List<BorrowBook> borrowedBooks = studentService.borrowedBook(user_Id1);
 
 									System.out.println("----------------------------------------------------------------------------------------"
@@ -265,22 +275,18 @@ public class StudentLogin {
 								}
 							}//While loop
 						} else {
-							System.out.println("Not a Student");
+							flag = false;
+							throw new LMSException("Not a Student");
 						}
-					} else {
-
-						System.out.println("Invalid Email/Password");
-					}
+					} 
 				}
 				catch(Exception e) {
-					e.printStackTrace();
 					flag = false;
-					System.out.println("Invalid Email/Password");
+					throw new LMSException("Invalid Email/Password");
 				}
-			}while(!flag);
-
+			} while(!flag);
 		} catch (IOException e1) {
-			System.out.println("Invalid Input");
+			throw new LMSException("Invalid Input");
 		}
 	}
 }

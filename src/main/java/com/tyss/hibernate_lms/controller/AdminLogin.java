@@ -13,7 +13,7 @@ import com.tyss.hibernate_lms.dto.BookBean;
 import com.tyss.hibernate_lms.dto.IssueBook;
 import com.tyss.hibernate_lms.dto.RequestBook;
 import com.tyss.hibernate_lms.dto.UserBean;
-import com.tyss.hibernate_lms.exception.CustomException;
+import com.tyss.hibernate_lms.exception.LMSException;
 import com.tyss.hibernate_lms.factory.AdminFactory;
 import com.tyss.hibernate_lms.factory.RegisterationLoginFactory;
 import com.tyss.hibernate_lms.factory.StudentFactory;
@@ -41,7 +41,7 @@ public class AdminLogin {
 					String password = scanner.next();
 					if(validation.validateEmail(email) && validation.validatePassword(password)) {
 						UserBean userBean = registerationLoginService.login(email, password);
-						if(userBean.getRole().equals("Admin")) {
+						if(userBean.getRole().equalsIgnoreCase("Admin")) {
 							System.out.println("Logged in");
 							flag = true;
 							while(flag) {
@@ -62,6 +62,7 @@ public class AdminLogin {
 								switch(choice1) {
 								case 1:
 									BookBean bookBean = new BookBean();
+									
 									/*
 									 * do { try { System.out.println("Enter the book id"); int bookId =
 									 * scanner.nextInt(); if(validation.validateBookId(bookId)) {
@@ -81,9 +82,11 @@ public class AdminLogin {
 											}
 										} catch (InputMismatchException e) {
 											flag = false;
+											scanner.nextLine();
 											System.err.println("Enter the booktitle");
 										} catch (ValidationException e) {
 											flag = false;
+											scanner.nextLine();
 											System.err.println(e.getMessage());
 										}
 									}while(!flag);
@@ -98,9 +101,11 @@ public class AdminLogin {
 											}
 										} catch (InputMismatchException e) {
 											flag = false;
+											scanner.nextLine();
 											System.err.println("Invalid author name");
 										} catch (ValidationException e) {
 											flag = false;
+											scanner.nextLine();
 											System.err.println(e.getMessage());
 										}
 									}while(!flag);
@@ -115,9 +120,11 @@ public class AdminLogin {
 											}
 										} catch (InputMismatchException e) {
 											flag = false;
+											scanner.nextLine();
 											System.err.println("Enter the category");
 										} catch (ValidationException e) {
 											flag = false;
+											scanner.nextLine();
 											System.err.println(e.getMessage());
 										}
 									}while(!flag);
@@ -133,9 +140,11 @@ public class AdminLogin {
 											}
 										} catch (InputMismatchException e) {
 											flag = false;
+											scanner.nextLine();
 											System.err.println("Enter the book copies");
 										} catch (ValidationException e) {
 											flag = false;
+											scanner.nextLine();
 											System.err.println(e.getMessage());
 										}
 									}while(!flag);
@@ -150,9 +159,11 @@ public class AdminLogin {
 											}
 										} catch (InputMismatchException e) {
 											flag = false;
+											scanner.nextLine();
 											System.err.println("Invalid publisher name");
 										} catch (ValidationException e) {
 											flag = false;
+											scanner.nextLine();
 											System.err.println(e.getMessage());
 										}
 									}while(!flag);
@@ -168,18 +179,21 @@ public class AdminLogin {
 											+ "---------------------------------------------------------------------------------------------");
 									break;
 								case 2:
-									System.out.println("Enter the book id"); 
-									int bookId = scanner.nextInt(); 
+									int bookId = 0;
 									do { 
 										try { 
+											System.out.println("Enter the book id"); 
+											bookId = scanner.nextInt(); 
 											if(validation.validateBookId(bookId)) {
 												flag = true; 
 											} 
 										} catch (InputMismatchException e) { 
 											flag = false; 
+											scanner.nextLine();
 											System.err.println("Enter the book Id as digits"); 
 										} catch (ValidationException e) { 
 											flag = false; 
+											scanner.nextLine();
 											System.err.println(e.getMessage()); 
 										}
 									}while(!flag);
@@ -197,22 +211,57 @@ public class AdminLogin {
 								case 3:
 									BookBean bookBean1 = new BookBean();
 									System.out.println("Enter your choice");
-									System.out.println("1:Search Book By Title \t 2:Search book By Author");
+									System.out.println("1:Search Book By Title \t 2:Search Book By Title \t 2:Search book By Author");
 									int ch = scanner.nextInt();
 									switch(ch) {
 									case 1:
-										System.out.println("Enter the book title");
-										String bookTitle = bufferedReader.readLine();
+										int bookId1 = 0;
 										do {
 											try {
+												System.out.println("Enter the book Id");
+												bookId1 = scanner.nextInt();
+												if(validation.validateBookId(bookId1)) {
+													flag = true;
+												}
+											} catch (InputMismatchException e) {
+												flag = false;
+												scanner.nextLine();
+												System.err.println("Invalid Id");
+											} catch (ValidationException e) {
+												flag = false;
+												scanner.nextLine();
+												System.err.println(e.getMessage());
+											}
+										}while(!flag);
+
+										System.out.println("----------------------------------------------------------------------------------------"
+												+ "---------------------------------------------------------------------------------------------");
+										bookBean1 = studentService.searchBookById(bookId1);
+										if(bookBean1 != null) {
+											System.out.println("Book is available");
+										} else {
+											System.out.println("Book doesn't exist");
+										}
+										System.out.println("----------------------------------------------------------------------------------------"
+
+												+ "---------------------------------------------------------------------------------------------");
+										break;
+									case 2:
+										String bookTitle = null;
+										do {
+											try {
+												System.out.println("Enter the book title");
+												bookTitle = bufferedReader.readLine();
 												if(validation.validateBook(bookTitle)) {
 													flag = true;
 												}
 											} catch (InputMismatchException e) {
 												flag = false;
+												scanner.nextLine();
 												System.err.println("Enter the booktitle");
 											} catch (ValidationException e) {
 												flag = false;
+												scanner.nextLine();
 												System.err.println(e.getMessage());
 											}
 										}while(!flag);
@@ -228,19 +277,22 @@ public class AdminLogin {
 										System.out.println("----------------------------------------------------------------------------------------"
 												+ "---------------------------------------------------------------------------------------------");
 										break;
-									case 2:
-										System.out.println("Enter the book author");
-										String author = bufferedReader.readLine();
+									case 3:
+										String author = null;
 										do {
 											try {
+												System.out.println("Enter the book author");
+												author = bufferedReader.readLine();
 												if(validation.validateBook(author)) {
 													flag = true;
 												}
 											} catch (InputMismatchException e) {
 												flag = false;
+												scanner.nextLine();
 												System.err.println("Invalid author name");
 											} catch (ValidationException e) {
 												flag = false;
+												scanner.nextLine();
 												System.err.println(e.getMessage());
 											}
 										}while(!flag);
@@ -257,39 +309,45 @@ public class AdminLogin {
 												+ "---------------------------------------------------------------------------------------------");
 										break;
 									default:
-										throw new CustomException("Invalid choice");
+										throw new LMSException("Invalid choice");
 									}//End of switch case		
 									break;
 								case 4:
-									System.out.println("Enter the book title");
-									String bookTitle = bufferedReader.readLine();
+									String bookTitle = null;
 									do {
 										try {
+											System.out.println("Enter the book title");
+											bookTitle = bufferedReader.readLine();
 											if(validation.validateBook(bookTitle)) {
 												flag = true;
 											}
 										} catch (InputMismatchException e) {
 											flag = false;
+											scanner.nextLine();
 											System.err.println("Enter the booktitle");
 										} catch (ValidationException e) {
 											flag = false;
+											scanner.nextLine();
 											System.err.println(e.getMessage());
 										}
 									}while(!flag);
 
 
-									System.out.println("Enter the copies to update");
-									int copies = scanner.nextInt(); 
+									int copies = 0;
 									do {
 										try {
+											System.out.println("Enter the copies to update");
+											copies = scanner.nextInt(); 
 											if(validation.validateCopies(copies)) {
 												flag = true;
 											}
 										} catch (InputMismatchException e) {
 											flag = false;
+											scanner.nextLine();
 											System.err.println("Enter the book copies");
 										} catch (ValidationException e) {
 											flag = false;
+											scanner.nextLine();
 											System.err.println(e.getMessage());
 										}
 									}while(!flag);
@@ -305,36 +363,40 @@ public class AdminLogin {
 											+ "---------------------------------------------------------------------------------------------");
 									break;
 								case 5:
-									System.out.println("Enter the Student User Id");
-									int user_Id2 = scanner.nextInt();
-
+									int user_Id2 = 0;
 									do {
 										try {
+											System.out.println("Enter the Student User Id");
+											user_Id2 = scanner.nextInt();
 											if(validation.validateId(user_Id2)) {
 												flag = true;
 											}
 										} catch (InputMismatchException e) {
 											flag = false;
+											scanner.nextLine();
 											System.err.println("Invalid User Id");
 										} catch (ValidationException e) {
 											flag = false;
+											scanner.nextLine();
 											System.err.println(e.getMessage());
 										}
 									}while(!flag);
-
 									
-									System.out.println("Enter the Book Id");
-									int book_Id2 = scanner.nextInt();
+									int book_Id2 = 0;
 									do {
 										try {
+											System.out.println("Enter the Book Id");
+											book_Id2 = scanner.nextInt();
 											if(validation.validateBookId(book_Id2)) {
 												flag = true;
 											}
 										} catch (InputMismatchException e) {
 											flag = false;
+											scanner.nextLine();
 											System.err.println("Enter the book Id as digits");
 										} catch (ValidationException e) {
 											flag = false;
+											scanner.nextLine();
 											System.err.println(e.getMessage());
 										}
 									}while(!flag);
@@ -410,36 +472,40 @@ public class AdminLogin {
 											+ "---------------------------------------------------------------------------------------------");
 									break;
 								case 9:
-									System.out.println("Enter User Id");
-									int user_Id = scanner.nextInt();
-
+									int user_Id = 0;
 									do { 
 										try { 
+											System.out.println("Enter User Id");
+											user_Id = scanner.nextInt();
 											if(validation.validateId(user_Id)) { 
 												flag = true; 
 											} 
 										} catch	(InputMismatchException e) { 
 											flag = false;
+											scanner.nextLine();
 											System.err.println("Invalid User Id"); 
 										} catch (ValidationException e) { 
 											flag = false; 
+											scanner.nextLine();
 											System.err.println(e.getMessage()); 
 										} 
 									}while(!flag);
 
-
-									System.out.println("Enter Book Id");
-									int book_Id = scanner.nextInt();
+									int book_Id = 0;									
 									do {
 										try {
+											System.out.println("Enter Book Id");
+											book_Id = scanner.nextInt();
 											if(validation.validateBookId(book_Id)) {
 												flag = true;
 											}
 										} catch (InputMismatchException e) {
 											flag = false;
+											scanner.nextLine();
 											System.err.println("Invalid Book Id");
 										} catch (ValidationException e) {
 											flag = false;
+											scanner.nextLine();
 											System.err.println(e.getMessage());
 										}
 									}while(!flag);
@@ -481,15 +547,14 @@ public class AdminLogin {
 									MainController.main(args);	
 									break;
 								default:
-									throw new CustomException("Invalid choice");
+									throw new LMSException("Invalid choice");
 								}//End of Switch case
 							}//End of While loop
 						} else {
+							flag = false;
 							System.out.println("Not an Admin");
 						}
-					} else {
-						System.out.println("Invalid Email/Password");
-					}
+					} 
 				} catch(Exception e) {
 					flag = false;
 					System.out.println("Invalid Email/Password");
@@ -497,7 +562,7 @@ public class AdminLogin {
 			} while(!flag);
 
 		} catch (IOException e1) {
-			System.out.println("Invalid Input");
+			throw new LMSException("Invalid Input");
 		}
 	}
 }

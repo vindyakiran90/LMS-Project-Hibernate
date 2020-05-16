@@ -16,7 +16,7 @@ import com.tyss.hibernate_lms.dto.BorrowBook;
 import com.tyss.hibernate_lms.dto.IssueBook;
 import com.tyss.hibernate_lms.dto.RequestBook;
 import com.tyss.hibernate_lms.dto.UserBean;
-import com.tyss.hibernate_lms.exception.CustomException;
+import com.tyss.hibernate_lms.exception.LMSException;
 
 public class AdminDAOImplementation implements AdminDAO {
 
@@ -36,7 +36,7 @@ public class AdminDAOImplementation implements AdminDAO {
 				transaction.commit();
 				return true;
 			} else {
-				throw new CustomException("Unable to delete the book, since it is issued to the student\n "
+				throw new LMSException("Unable to delete the book, since it is issued to the student\n "
 						+ "Once it is returned, can delete the book");
 			}
 		} catch (Exception e) {
@@ -125,19 +125,19 @@ public class AdminDAOImplementation implements AdminDAO {
 								transaction.commit();
 
 							} else {
-								throw new CustomException("Fees is due");
+								throw new LMSException("Fees is due");
 							}
 						} else {
-							throw new CustomException("Number of books borrowed limit exceeded");
+							throw new LMSException("Number of books borrowed limit exceeded");
 						}
 					} else {
-						throw new CustomException("Book does not exist");
+						throw new LMSException("Book does not exist");
 					}
 				} else {
-					throw new CustomException("User does not exist");
+					throw new LMSException("User does not exist");
 				}
 			} else {
-				throw new CustomException("Book is not requested from the user");
+				throw new LMSException("Book is not requested from the user");
 			}
 			return true;
 		} catch (Exception e) {
@@ -252,7 +252,7 @@ public class AdminDAOImplementation implements AdminDAO {
 				borrowBook.setFees(noOfDaysBetween * 5);
 				transaction.commit();
 				System.out.println("Student should pay "+borrowBook.getFees()+" Rupees");
-				throw new CustomException("Student should pay the fine for delaying to return the book");
+				throw new LMSException("Student should pay the fine for delaying to return the book");
 			} else {
 				String jpql1 = "delete from BorrowBook e where e.bookId = :bookId and e.userId = :userId";
 				Query query1 = manager.createQuery(jpql1); 
@@ -297,7 +297,4 @@ public class AdminDAOImplementation implements AdminDAO {
 			manager.close();
 		}
 	}
-
-
-
 }
