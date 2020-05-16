@@ -56,4 +56,11 @@ public class StudentServiceTest {
 		Assertions.assertNotNull(bookBean);
 	}
 
+	@Test
+	public void testBookReturn() {
+		int userId = 10002;
+		int bookId = 2001;
+		boolean status = studentService.bookReturn(userId, bookId);
+		Assertions.assertTrue(status);
+	}
 }

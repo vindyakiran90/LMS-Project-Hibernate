@@ -16,5 +16,5 @@ public interface AdminService {
 	List<RequestBook> showRequest();
 	List<UserBean> showStudentUsers();
 	List<IssueBook> issuedBooks();
-	boolean bookReturn(int userId, int bookId);
+	boolean isBookReceived(int userId, int bookId);
 }

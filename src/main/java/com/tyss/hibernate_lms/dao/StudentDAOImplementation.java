@@ -1,5 +1,7 @@
 package com.tyss.hibernate_lms.dao;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -184,6 +186,59 @@ public class StudentDAOImplementation implements StudentDAO {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			transaction.rollback();
+			return false;
+		} finally {
+			manager.close();
+		}
+	}
+	
+	@Override
+	public boolean bookReturn(int userId, int bookId) {
+		EntityManager manager = null;
+		EntityTransaction transaction = null;
+		BorrowBook borrowBook = new BorrowBook();
+		try {
+			manager = factory.createEntityManager();
+			transaction = manager.getTransaction();
+			transaction.begin();
+
+			String jpql= "select e from BorrowBook e where e.userId = :userId and e.bookId = :bookId";
+			Query query = manager.createQuery(jpql); 
+			query.setParameter("userId", userId);
+			query.setParameter("bookId", bookId);
+			borrowBook = (BorrowBook) query.getSingleResult();
+			LocalDate returnDate = borrowBook.getDateOfReturn();
+			LocalDate currentDate = LocalDate.now();
+			long noOfDaysBetween = ChronoUnit.DAYS.between(returnDate, currentDate);
+			System.out.println(noOfDaysBetween);
+			if(noOfDaysBetween > 0) {
+				borrowBook.setFees(noOfDaysBetween * 5);
+				transaction.commit();
+				System.out.println("Student should pay "+borrowBook.getFees()+" Rupees");
+				throw new LMSException("Student should pay the fine for delaying to return the book");
+			} else {
+				String jpql1 = "delete from BorrowBook e where e.bookId = :bookId and e.userId = :userId";
+				Query query1 = manager.createQuery(jpql1); 
+				query1.setParameter("bookId", bookId);
+				query1.setParameter("userId", userId);
+				int count = query1.executeUpdate();
+				if(count != 0) {
+					String jpql2 = "delete from IssueBook e where e.bookId = :bookId and e.userId = :userId";
+					Query query2 = manager.createQuery(jpql2); 
+					query2.setParameter("bookId", bookId);
+					query2.setParameter("userId", userId);
+					int count1 = query2.executeUpdate();
+					if(count1 != 0) {
+						BookBean bookBean = manager.find(BookBean.class, borrowBook.getBookId());
+						bookBean.setNumberOfIssuedBooks(bookBean.getNumberOfIssuedBooks() - 1);
+						bookBean.setNumberOfAvailableBooks(bookBean.getNumberOfAvailableBooks() + 1);
+						transaction.commit();
+					}
+				}
+			}
+			return true;
+		} catch (Exception e) {
 			transaction.rollback();
 			return false;
 		} finally {
